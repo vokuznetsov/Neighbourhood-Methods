@@ -20,10 +20,10 @@ public class Parser {
             BufferedReader in = new BufferedReader(new InputStreamReader(openFile(path)));
 
             // read the size of matrix
-            String str = in.readLine();
+            String str = in.readLine().trim();
             int space = str.indexOf(" ");
             realMatrix = new BlockRealMatrix(Integer.parseInt(str.substring(0, space)),
-                    Integer.parseInt(str.substring(space + 1, space + 2)));
+                    Integer.parseInt(str.substring(space + 1, str.length())));
 
             int count = 0;
             while ((str = in.readLine()) != null) {

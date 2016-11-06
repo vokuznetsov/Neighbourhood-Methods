@@ -8,12 +8,12 @@ import org.apache.commons.math3.linear.RealMatrix;
 public class Main {
     public static void main(String[] args) {
 
-        String path = "/small/cfp_small_1.txt";
+        String path = "/small/cfp_small_3.txt";
         Parser parser = new Parser();
 
         RealMatrix matrix = parser.parser(path);
 
         GeneralVNS generalVNS = new GeneralVNS(matrix);
-        generalVNS.generalVNS(4, 10);
+        generalVNS.generalVNS(10, 20);
     }
 }
