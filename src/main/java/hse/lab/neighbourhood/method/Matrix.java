@@ -17,8 +17,15 @@ public class Matrix {
 
     public Matrix(Map<Integer, List<Integer>> matrix) {
         this.matrix = matrix;
-        numberOfRows = matrix.size();
-        numberOfColumns = matrix.values().size();
+        if (!matrix.isEmpty()) {
+            Optional<List<Integer>> firstRow = matrix.values().stream().findFirst();
+            numberOfColumns = firstRow.isPresent() ? firstRow.get().size() : 0;
+            numberOfRows = matrix.size();
+        }
+        else {
+            numberOfRows=0;
+            numberOfColumns = 0;
+        }
     }
 
     public Map<Integer, List<Integer>> getMatrix() {
@@ -57,11 +64,11 @@ public class Matrix {
 
     @Override
     public String toString() {
-        return "Matrix{\n" +
-                "numberOfRows=" + numberOfRows + "\n" +
-                ", numberOfColumns=" + numberOfColumns + "\n" +
-                ", matrix=" + matrix +
-                '}';
+        return "\nMatrix: {\n" +
+                "numberOfRows=" + numberOfRows +
+                ", numberOfColumns=" + numberOfColumns + ", \n" +
+                "matrix=" + matrix +
+                "\n}";
     }
 
     @Override

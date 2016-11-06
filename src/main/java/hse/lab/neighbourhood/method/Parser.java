@@ -1,5 +1,8 @@
 package hse.lab.neighbourhood.method;
 
+import org.apache.commons.math3.linear.BlockRealMatrix;
+import org.apache.commons.math3.linear.RealMatrix;
+
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,22 +13,31 @@ import java.util.List;
  */
 public class Parser {
 
-    public Matrix parser(String path) {
+    private RealMatrix realMatrix;
+
+    public RealMatrix parser(String path) {
         try {
-            Matrix matrix = new Matrix();
             BufferedReader in = new BufferedReader(new InputStreamReader(openFile(path)));
 
+            // read the size of matrix
             String str = in.readLine();
             int space = str.indexOf(" ");
-            matrix.setNumberOfRows(Integer.parseInt(str.substring(0, space)));
-            matrix.setNumberOfColumns(Integer.parseInt(str.substring(space + 1, space + 2)));
+            realMatrix = new BlockRealMatrix(Integer.parseInt(str.substring(0, space)),
+                    Integer.parseInt(str.substring(space + 1, space + 2)));
 
+            int count = 0;
             while ((str = in.readLine()) != null) {
                 List<String> indexes = new ArrayList<>(Arrays.asList(str.trim().split(" ")));
                 indexes.remove(0);
-                matrix.addRow(indexes);
+
+                double[] indexList = new double[realMatrix.getColumnDimension()];
+                for (int i = 0; i < realMatrix.getColumnDimension(); i++) {
+                    indexList[i] = 0;
+                }
+                indexes.forEach(index -> indexList[Integer.parseInt(index) - 1] = 1);
+                realMatrix.setRow(count++, indexList);
             }
-            return matrix;
+            return realMatrix;
         } catch (IOException ex) {
             System.out.println(ex.getMessage());
             return null;
