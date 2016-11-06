@@ -8,9 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * @author vkuzn on 05.11.2016.
- */
+
 public class Parser {
 
     private RealMatrix realMatrix;

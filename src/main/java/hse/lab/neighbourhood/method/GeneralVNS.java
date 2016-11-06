@@ -1,47 +1,42 @@
 package hse.lab.neighbourhood.method;
 
 import com.rits.cloning.Cloner;
-import org.apache.commons.math3.analysis.function.Max;
 import org.apache.commons.math3.linear.RealMatrix;
 
 import java.util.*;
-import java.util.stream.Stream;
 
-/**
- * @author vkuzn on 05.11.2016.
- */
+
 public class GeneralVNS {
 
     private RealMatrix realMatrix;
-
-    private double maxGroupingEfficacy = -1;
-    private List<Matrix> clustersWithMaxGE;
-    private int numberOFClusters;
+    private Result finalResult = new Result();
 
     public GeneralVNS(RealMatrix realMatrix) {
         this.realMatrix = realMatrix;
     }
 
-    public void generalVNS(int kMax, int lMax) {
+    public Result generalVNS(int kMax, int lMax) {
 
         for (int i = 1; i <= kMax; i++) {
             List<Matrix> clusters = shaking(i);
             if (clusters != null) {
                 List<Matrix> bestClusters = vnd(clusters, lMax);
                 if (bestClusters == null) {
-                    printMaxGroupEfficacy();
-                    return;
+                    printMaxGroupEfficacy(finalResult);
+                    return finalResult;
                 }
+
                 double ge = groupingEfficacy(bestClusters);
-                if (ge > maxGroupingEfficacy) {
-                    maxGroupingEfficacy = ge;
-                    clustersWithMaxGE = bestClusters;
-                    numberOFClusters = i;
+                if (ge > finalResult.getGe()) {
+                    finalResult.setGe(ge);
+                    finalResult.setCluster(bestClusters);
+                    finalResult.setNumberOfCluster(i);
+                    i = 1;
                 }
-                printResult(bestClusters, i, ge);
             }
-            printMaxGroupEfficacy();
         }
+        printMaxGroupEfficacy(finalResult);
+        return finalResult;
     }
 
     // objective function
@@ -83,11 +78,11 @@ public class GeneralVNS {
                 int start = i * partSize + 1;
                 if (i != amountOfParts - 1) {
                     int end = i * partSize + partSize;
-                    clusters.add(new Matrix(getCluster(start, end, end)));
+                    clusters.add(new Matrix(getClusterMatrix(start, end, end)));
                 } else {
                     int endRow = realMatrix.getRowDimension();
                     int endColumn = realMatrix.getColumnDimension();
-                    clusters.add(new Matrix(getCluster(start, endRow, endColumn)));
+                    clusters.add(new Matrix(getClusterMatrix(start, endRow, endColumn)));
                 }
             }
             return clusters;
@@ -95,7 +90,7 @@ public class GeneralVNS {
         return null;
     }
 
-    private Map<Integer, List<Integer>> getCluster(int startIndex, int endRowIndex, int endColumnIndex) {
+    private Map<Integer, List<Integer>> getClusterMatrix(int startIndex, int endRowIndex, int endColumnIndex) {
         List<Integer> sequenceNumbers = new ArrayList<>();
         Map<Integer, List<Integer>> cluster = new HashMap<>();
 
@@ -185,37 +180,25 @@ public class GeneralVNS {
 
             for (int l = 0; l < lMax; l++) {
                 List<Matrix> iteratedCluster = bestAddingRowCluster;
-                List<Matrix> rowChangedClusters;
-                List<Matrix> columnChangedClusters;
+                Result rowResult = getBestRowCluster(iteratedCluster);
+                Result columnResult = getBestColumnCluster(iteratedCluster);
 
-                for (int i = 1; i <= realMatrix.getRowDimension(); i++) {
-                    rowChangedClusters = addRow(iteratedCluster, i);
-                    double rowGE = groupingEfficacy(rowChangedClusters);
-                    if (rowGE > groupingEfficacy) {
-                        groupingEfficacy = rowGE;
-                        bestAddingRowCluster = rowChangedClusters;
-                    }
-                }
-
-                for (int i = 1; i <= realMatrix.getColumnDimension(); i++) {
-                    columnChangedClusters = addColumn(iteratedCluster, i);
-                    double columnGE = groupingEfficacy(columnChangedClusters);
-                    if (columnGE > groupingEfficacy) {
-                        groupingEfficacy = columnGE;
-                        bestAddingRowCluster = columnChangedClusters;
-                    }
+                double maxGE = Math.max(rowResult.getGe(), columnResult.getGe());
+                if (maxGE > groupingEfficacy) {
+                    groupingEfficacy = maxGE;
+                    bestAddingRowCluster = maxGE == rowResult.getGe() ? rowResult.getCluster() : columnResult.getCluster();
+                    l = 0;
                 }
             }
-
             return bestAddingRowCluster;
         }
     }
 
-    private void printMaxGroupEfficacy() {
+    private void printMaxGroupEfficacy(Result result) {
         System.out.println("\n\n----------------MAX GROUPING EFFICACY----------------");
-        System.out.println("Max group efficacy equals " + maxGroupingEfficacy);
-        System.out.println("Number of cluster(s) is " + numberOFClusters);
-        System.out.println("Cluster with max GE is \n" + clustersWithMaxGE);
+        System.out.println("Max group efficacy equals " + result.getGe());
+        System.out.println("Number of cluster(s) is " + result.getNumberOfCluster());
+        System.out.println("Cluster with max GE is \n" + result.getCluster());
     }
 
     private void printResult(List<Matrix> clusters, int numberOfPart, double ge) {
@@ -228,5 +211,37 @@ public class GeneralVNS {
     private <T> T getClone(T o) {
         Cloner cloner = new Cloner();
         return cloner.deepClone(o);
+    }
+
+    private Result getBestRowCluster(List<Matrix> iteratedCluster) {
+
+        Result result = new Result(iteratedCluster);
+        List<Matrix> rowChangedClusters;
+
+        for (int i = 1; i <= realMatrix.getRowDimension(); i++) {
+            rowChangedClusters = addRow(iteratedCluster, i);
+            double rowGE = groupingEfficacy(rowChangedClusters);
+            if (rowGE > result.getGe()) {
+                result.setGe(rowGE);
+                result.setCluster(rowChangedClusters);
+            }
+        }
+        return result;
+    }
+
+    private Result getBestColumnCluster(List<Matrix> iteratedCluster) {
+
+        Result result = new Result(iteratedCluster);
+        List<Matrix> columnChangedClusters;
+
+        for (int i = 1; i <= realMatrix.getColumnDimension(); i++) {
+            columnChangedClusters = addColumn(iteratedCluster, i);
+            double columnGE = groupingEfficacy(columnChangedClusters);
+            if (columnGE > result.getGe()) {
+                result.setGe(columnGE);
+                result.setCluster(columnChangedClusters);
+            }
+        }
+        return result;
     }
 }

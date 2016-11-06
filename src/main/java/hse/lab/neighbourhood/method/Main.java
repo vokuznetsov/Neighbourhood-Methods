@@ -2,18 +2,32 @@ package hse.lab.neighbourhood.method;
 
 import org.apache.commons.math3.linear.RealMatrix;
 
-/**
- * @author vkuzn on 05.11.2016.
- */
+import java.util.ArrayList;
+import java.util.List;
+
+
 public class Main {
+    private final static int K_MAX = 50;
+    private final static int L_MAX = 150;
+    private final static String outputPath = "C:\\Users\\Vladimir\\Documents\\IdeaProjects\\HSE\\Git\\Neighbourhood-Methods\\result\\";
+
     public static void main(String[] args) {
 
-        String path = "/small/cfp_small_3.txt";
-        Parser parser = new Parser();
+        List<String> fileNames = new ArrayList<>();
+        fileNames.add("#1-Stanfel(1985)-1_30x50.txt");
+        fileNames.add("#2-Stanfel(1985)-2_30x50.txt");
+        fileNames.add("#3 -McCormick(1982)_37x53.txt");
+        fileNames.add("#4-King&Nakorinchai_30x90.txt");
 
-        RealMatrix matrix = parser.parser(path);
+        for (int i = 1; i <= fileNames.size(); i++) {
+            String fileName = fileNames.get(i);
+            String path = "/large/" + fileName;
 
-        GeneralVNS generalVNS = new GeneralVNS(matrix);
-        generalVNS.generalVNS(10, 20);
+            Parser parser = new Parser();
+            RealMatrix matrix = parser.parser(path);
+            GeneralVNS generalVNS = new GeneralVNS(matrix);
+            Result result = generalVNS.generalVNS(K_MAX, L_MAX);
+            result.writeToFile(outputPath + "cfp_" + i + "_sol.txt");
+        }
     }
 }

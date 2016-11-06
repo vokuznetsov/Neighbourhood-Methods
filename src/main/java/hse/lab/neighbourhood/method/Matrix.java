@@ -2,9 +2,7 @@ package hse.lab.neighbourhood.method;
 
 import java.util.*;
 
-/**
- * @author vkuzn on 05.11.2016.
- */
+
 public class Matrix {
 
     private int numberOfRows = 0;
