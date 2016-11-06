@@ -35,6 +35,7 @@ public class Parser {
                 indexes.forEach(index -> indexList[Integer.parseInt(index) - 1] = 1);
                 realMatrix.setRow(count++, indexList);
             }
+            in.close();
             return realMatrix;
         } catch (IOException ex) {
             System.out.println(ex.getMessage());
