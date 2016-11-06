@@ -13,7 +13,7 @@ public class Main {
 
         RealMatrix matrix = parser.parser(path);
 
-        GeneralVNS generalVNS = new GeneralVNS();
-        generalVNS.generalVNS(matrix, 6, 10);
+        GeneralVNS generalVNS = new GeneralVNS(matrix);
+        generalVNS.generalVNS(4, 10);
     }
 }

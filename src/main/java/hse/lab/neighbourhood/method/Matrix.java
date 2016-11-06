@@ -62,6 +62,15 @@ public class Matrix {
         matrix.put(matrix.size() + 1, new ArrayList<>(indexList));
     }
 
+    public List<Integer> getRow(int key) {
+        return matrix.get(key);
+    }
+
+    public List<Integer> getColumnIndexes() {
+        Optional<List<Integer>> optional = matrix.values().stream().findFirst();
+        return optional.isPresent() ? optional.get() : null;
+    }
+
     @Override
     public String toString() {
         return "\nMatrix: {\n" +
