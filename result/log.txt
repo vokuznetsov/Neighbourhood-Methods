@@ -1,0 +1,28 @@
+----------------MAX GROUPING EFFICACY----------------
+Max group efficacy equals 0.4891304347826087
+Number of cluster(s) is 13
+
+Writing to file: C:\Users\Vladimir\Documents\IdeaProjects\HSE\Git\Neighbourhood-Methods\result\cfp_1_sol.txt
+
+
+----------------MAX GROUPING EFFICACY----------------
+Max group efficacy equals 0.5435897435897435
+Number of cluster(s) is 11
+
+Writing to file: C:\Users\Vladimir\Documents\IdeaProjects\HSE\Git\Neighbourhood-Methods\result\cfp_2_sol.txt
+
+
+----------------MAX GROUPING EFFICACY----------------
+Max group efficacy equals 0.5940438871473355
+Number of cluster(s) is 2
+
+Writing to file: C:\Users\Vladimir\Documents\IdeaProjects\HSE\Git\Neighbourhood-Methods\result\cfp_3_sol.txt
+
+
+----------------MAX GROUPING EFFICACY----------------
+Max group efficacy equals 0.44717444717444715
+Number of cluster(s) is 10
+
+Writing to file: C:\Users\Vladimir\Documents\IdeaProjects\HSE\Git\Neighbourhood-Methods\result\cfp_4_sol.txt
+
+Process finished with exit code 0
